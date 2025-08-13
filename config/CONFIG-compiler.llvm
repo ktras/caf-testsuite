@@ -1,14 +1,14 @@
 COMPILER="llvm"
-LLVM_PATH="/global/cfs/cdirs/m2878/flang/flang-paper/install/bin"
+#FC="flang"
+LLVM_PATH="${HOME}/opt/llvm-sipearl/bin"
 FC="${LLVM_PATH}/flang"
 CC="${LLVM_PATH}/clang"
-GASNET_LIB="/global/cfs/cdirs/m2878/flang/flang-paper/caffeine/gasnet-sipearl-flang-install/lib"
 
-CAFFEINE_PATH="/global/cfs/cdirs/m2878/flang/flang-paper/caffeine/build/flang-new_F7BB3F183137B70F/caffeine"
-LIB_CAF="-fcoarray -L${CAFFEINE_PATH} -L${GASNET_LIB} -L/opt/cray/libfabric/1.20.1/lib64 -L/opt/cray/pe/pmi/default/lib -lcaffeine -lgasnet-ofi-seq -lfabric -lpmi2 -lhwloc -lhugetlbfs -lm -Wl,-rpath,${CAFFEINE_PATH}"
+CAFFEINE_PATH="$HOME/opt/caffeine/lib"
+LIB_CAF="-fcoarray -L${CAFFEINE_PATH} -lcaffeine -Wl,-rpath,${CAFFEINE_PATH}"
 FFLAGS="-cpp -DCO_REDUCTIONS_SUPPORT ${LIB_CAF}"
 
-LAUNCHER="srun -N 2 -n 2 --cpu-bind=cores -v -l -- "
+LAUNCHER=""
 EXEC_OPTIONS=""
 
 COMPILE_CMD="${FC} ${FFLAGS} ${FFLAGS_BENCH_DEFS}"
