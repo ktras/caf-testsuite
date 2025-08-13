@@ -118,6 +118,7 @@ if [ "$EXECUTE_TESTS" -eq "1" -o "$BOTH" -eq "1" ]; then           #execution en
                 elif [ "$compiler" == "llvm" ]; then
                     export export GASNET_PSHM_NODES=$NP
                 fi
+                echo "File running: $opfile"
                 EXEC_OUT=` perl $ROOT/../../support/timedexec.pl $TIMEOUT "$LAUNCHER $BIN_DIR/$opfile $EXEC_OPTIONS  "  &> $EXEC_OUT_DIR/$opfile.exec  && echo 1||echo -1`
                 $ROOT/../../support/kill_orphan_procs.sh $opfile
 		$LAUNCHER $BIN_DIR/$opfile $EXEC_OPTIONS #2&>1 $EXEC_OUT_DIR/$opfile.exec
