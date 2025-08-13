@@ -72,7 +72,8 @@ program broadcast
 
      if (me == 1) then
 
-        write(*,'(I2,A10,I10)') i," msg_size:",msg_size
+        !write(*,'(I2,A1)') i,";"
+        write(*,'(I2,A1)',advance='no') i,";"
 
         call get_rtc(srtc)
 

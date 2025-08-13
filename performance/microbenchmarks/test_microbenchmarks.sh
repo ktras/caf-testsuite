@@ -1,5 +1,6 @@
 #!/bin/bash
 
+NP=2
 if [ -f ../../config/CONFIG ]; then
   source ../../config/CONFIG
 else
@@ -19,7 +20,7 @@ elif [ "$1" == "clean" ]; then
 fi
 cd $TESTS_DIR ;
 
-if [ $# == 3 ]; then
+if [[ $# == 3 || $# == 4 ]]; then
   if [ "$1" == "compile" ]; then
     COMPILE_TESTS="1"
     EXECUTE_TESTS="0"
@@ -32,10 +33,11 @@ if [ $# == 3 ]; then
     BOTH="1"
     compiler=$2
   else
-    echo "USAGE: ./test_microbenchmarks.sh <mode> <compiler> <file> "
+    echo "USAGE: ./test_microbenchmarks.sh <mode> <compiler> <file> <np> "
     echo "           mode     = compile|execute|complete"
     echo "           compiler = uhcaf|ifort|g95"
     echo "           file = <file-name>|ALL"
+    echo "	     np"
     echo -e "Please ensure:\n The test_suite specific parameters are set in ${BENCH_PATH}/../../config/CONFIG \n The compiler specific parameters in ${BENCH_PATH}/../../config/CONFIG-compiler.<compiler> \n"
     echo "The results of all the microbenchmarks are stored in a plottable format in $EXEC_OUT_DIR"
     exit 1
@@ -50,6 +52,9 @@ if [ $# == 3 ]; then
 	fi
   else
   	FILE_LIST="`ls *.f90`"
+  fi
+  if [ "$4" ]; then
+  	NP=$4
   fi
 else
     echo "USAGE: ./test_microbenchmarks.sh <mode> <compiler> <file> "
@@ -70,11 +75,12 @@ fi
 rm -rf $COMP_OUT_DIR $EXEC_OUT_DIR 
 mkdir -p $COMP_OUT_DIR $EXEC_OUT_DIR  $HISTORY_OUT_DIR $BIN_DIR $LOG_DIR
 
-$CC -c rtc.c -o $BIN_DIR/rtc.o -D$TIMER_ARCH
+echo "$CC  -Wno-implicit-function-declaration -c rtc.c -o $BIN_DIR/rtc.o -D$TIMER_ARCH"
+$CC  -Wno-implicit-function-declaration -c rtc.c -o $BIN_DIR/rtc.o -D$TIMER_ARCH
 
 if [ "$COMPILE_TESTS" -eq "1" -o "$BOTH" -eq "1" ]; then
  for file in $FILE_LIST ; do
-       NP=2
+       #NP=2
        NPROCS=$NP
        source ${BENCH_PATH}/../../config/CONFIG-compiler.${compiler}
        type=`echo $file | awk -F"/" '{print $NF}'`
@@ -93,7 +99,7 @@ fi
 
 if [ "$EXECUTE_TESTS" -eq "1" -o "$BOTH" -eq "1" ]; then           #execution enabled
  for file in $FILE_LIST ; do
-       NP=2
+       #NP=2
        NPROCS=$NP
        source ${BENCH_PATH}/../../config/CONFIG-compiler.${compiler}
        type=`echo $file | awk -F"/" '{print $NF}'`
@@ -109,9 +115,12 @@ if [ "$EXECUTE_TESTS" -eq "1" -o "$BOTH" -eq "1" ]; then           #execution en
 	        # any settings at CONFIG-ifort
 	        if [ "$compiler" == "ifort" ]; then
 	               export FOR_COARRAY_NUM_IMAGES=$NP
-	        fi
+                elif [ "$compiler" == "llvm" ]; then
+                    export export GASNET_PSHM_NODES=$NP
+                fi
                 EXEC_OUT=` perl $ROOT/../../support/timedexec.pl $TIMEOUT "$LAUNCHER $BIN_DIR/$opfile $EXEC_OPTIONS  "  &> $EXEC_OUT_DIR/$opfile.exec  && echo 1||echo -1`
                 $ROOT/../../support/kill_orphan_procs.sh $opfile
+		$LAUNCHER $BIN_DIR/$opfile $EXEC_OPTIONS #2&>1 $EXEC_OUT_DIR/$opfile.exec
 
                 if [ "$EXEC_OUT" == "-1" ]; then                         #runtime error
                     EXEC_STATUS="RUNTIME ERROR"
@@ -125,7 +134,7 @@ if [ "$EXECUTE_TESTS" -eq "1" -o "$BOTH" -eq "1" ]; then           #execution en
        fi
        echo "--------------------------------------"
        printf 'Test: %s\tNumber of Images: %s\tExecution Status: %s\n' "$type" "$NP" "$EXEC_STATUS" | tee -a $LOG_DIR/$logfile
-       cat $EXEC_OUT_DIR/$opfile.exec  2>/dev/null
+       #cat $EXEC_OUT_DIR/$opfile.exec  #2>/dev/null
  done
 echo "============================= EXECUTION STATISTICS =========================" | tee -a $LOG_DIR/$logfile
 echo "TOTAL PASSED = $PASSED_COUNT TOTAL FAILED = $FAILED_COUNT"  | tee -a $LOG_DIR/$logfile
