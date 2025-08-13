@@ -1,0 +1,11 @@
+COMPILER="cray"
+FC="ftn"
+CC="cc"
+
+FFLAGS="-eZ -O3 -Omsgs,vector3"
+
+LAUNCHER="srun -N 2 -n 2 --cpu-bind=cores -v -l -- "
+EXEC_OPTIONS=""
+
+COMPILE_CMD="${FC} ${FFLAGS} ${FFLAGS_BENCH_DEFS}"
+
