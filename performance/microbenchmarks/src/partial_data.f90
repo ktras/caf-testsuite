@@ -21,7 +21,7 @@
 !---------------------------------------------------------------------
 
 program partial_data
-
+  use iso_fortran_env, only: output_unit
   implicit none
 
   integer,parameter :: nt=4096 ! 64 MB
@@ -53,6 +53,7 @@ program partial_data
 
   if (me == 1) then
      write(*,'(A1,A13,A10,A21,A20)') "#","[Msg Size]","[Bytes]","[Microsec]","[KB/sec]"
+     flush(output_unit)
   endif
 
   i=1
@@ -66,6 +67,7 @@ program partial_data
      if (me == 1) then
 
         write(*,'(I2,A1, I10,A1)',advance='no') i,";", msg_size,";"
+        flush(output_unit)
 
         call get_rtc(srtc)
 
@@ -84,6 +86,7 @@ program partial_data
         r_iterations=iterations
 
         write(*,'(I10,A1,E20.8,A1,E20.8)') 2*nt*msg_size,";",rtc*1000000.0/r_iterations,";",4.0*r_msgsize*r_iterations/rtc/1024.0
+        flush(output_unit)
 
         i=i+1
 
@@ -91,6 +94,7 @@ program partial_data
            do j=1,msg_size
               if (msg(k,j)[2] /= me) then
                  write(*,*) "Data is missing."
+                 flush(output_unit)
                  call EXIT(1)
               endif
            enddo

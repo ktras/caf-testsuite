@@ -21,7 +21,7 @@
 !---------------------------------------------------------------------
 
 program latency_bandwidth
-
+  use iso_fortran_env, only: output_unit
   implicit none
 
   integer,parameter :: nt=1024*1024
@@ -63,6 +63,7 @@ program latency_bandwidth
 
   if (me == 1) then
      write(*,'(A1,A10,A21,A20)') "#","[Bytes]","[Microsec]","[KB/sec]"
+     flush(output_unit)
   endif
 
   i=1
@@ -76,6 +77,7 @@ program latency_bandwidth
      if (me == 1) then
 
         write(*,'(I2,A1)',advance='no') i,";"
+        flush(output_unit)
 
         call get_rtc(srtc)
 
@@ -92,6 +94,7 @@ program latency_bandwidth
         r_iterations=iterations
 
         write(*,'(I10,A1,E20.8,A1,E20.8)') 4*msg_size,";",rtc*1000000.0/r_iterations,";",4.0*r_msgsize*r_iterations/rtc/1024.0
+        flush(output_unit)
 
         i=i+1
 
@@ -105,6 +108,7 @@ program latency_bandwidth
 
            if (msg(k) /= 1) then
               write(*,*) "Data received is incomplete."
+              flush(output_unit)
               call EXIT(2)
            endif
 

@@ -21,7 +21,7 @@
 !---------------------------------------------------------------------
 
 program put_latency
-
+  use iso_fortran_env, only: output_unit
   implicit none
 
   integer,parameter :: iterations=10*NITER
@@ -62,6 +62,7 @@ program put_latency
 
   if (me == 1) then
      write(*,'(A1,A10,A20)') "#","[Bytes]","[Microsec]"
+     flush(output_unit)
 
   endif
 
@@ -74,6 +75,7 @@ program put_latency
  if (me == 1) then
 
     write(*,'(I2,A1)',advance='no') i,";"
+    flush(output_unit)
 
     call get_rtc(srtc)
 
@@ -90,6 +92,7 @@ program put_latency
     r_iterations=iterations
 
     write(*,'(I10,A1,E20.8)') 4,";",rtc*1000000.0/r_iterations
+    flush(output_unit)
 
     i=i+1
 
@@ -101,6 +104,7 @@ program put_latency
 
    if (msg(1) /= 1) then
       write(*,*) "Data received is incomplete."
+      flush(output_unit)
       call EXIT(1)    
    endif
 

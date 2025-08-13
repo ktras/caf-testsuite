@@ -2,7 +2,7 @@ COMPILER="cray"
 FC="ftn"
 CC="cc"
 
-FFLAGS="-eZ -O3 -Omsgs,vector3"
+FFLAGS="-eZ -O3 -Omsgs,nointerchange"
 
 LAUNCHER="srun -N 2 -n 2 --cpu-bind=cores -v -l -- "
 EXEC_OPTIONS=""
