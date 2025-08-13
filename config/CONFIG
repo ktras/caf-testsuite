@@ -25,7 +25,7 @@ BIN_DIR=${ROOT}/bin/                # directory for the binaries
 EXEC_OUT_DIR=${OUTPUT_DIR}/latest_execute
 COMP_OUT_DIR=${OUTPUT_DIR}/latest_compile
 HISTORY_OUT_DIR=${OUTPUT_DIR}/history
-NITER=1000
+NITER=50000
 
 # for microbenchmarks
 # NOTE: the tests work with allocated memory heap > 1MB
