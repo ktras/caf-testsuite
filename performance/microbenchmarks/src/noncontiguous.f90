@@ -25,7 +25,7 @@ program partial_data
   implicit none
 
   integer,parameter :: nt=4096*256 ! 1 MB
-  integer,parameter :: iterations=NITER
+  integer,parameter :: iterations=500
 
   integer,allocatable:: msg(:,:)[:]
   integer           :: me
